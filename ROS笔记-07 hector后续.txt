@@ -1,0 +1,23 @@
+Team Hector Project (https://code.google.com/archive/p/tu-darmstadt-ros-pkg/)
+	http://www.teamhector.de/resources
+	http://wiki.ros.org/tu-darmstadt-ros-pkg
+
+hector_slam
+	http://wiki.ros.org/hector_slam
+How to build a Map Using Logged Data(Team_Hector_MappingBox_RoboCup_2011_Rescue_Arena.bag)
+	http://wiki.ros.org/hector_slam/Tutorials/MappingUsingLoggedData
+		sudo apt-get install ros-indigo-hector-slam
+		
+		wget http://tu-darmstadt-ros-pkg.googlecode.com/files/Team_Hector_MappingBox_RoboCup_2011_Rescue_Arena.bag
+		
+		terminal-1
+		roslaunch hector_slam_launch tutorial.launch
+		terminal-2
+		rosbag play Team_Hector_MappingBox_RoboCup_2011_Rescue_Arena.bag  --clock
+
+
+hector_navigation
+	http://wiki.ros.org/hector_navigation
+
+hector_localization
+	http://wiki.ros.org/hector_localization

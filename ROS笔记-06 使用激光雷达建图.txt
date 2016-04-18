@@ -1,0 +1,45 @@
+1. 安装框架 hector_slam_example [https://github.com/DaikiMaekawa/hector_slam_example]
+		参考网址： http://m.blog.csdn.net/article/details?id=49026955
+					或 http://www.cnblogs.com/zxouxuewei/p/5307736.html ----- 二.利用深度相机仿激光数据创建地图
+
+		1.1 git clone
+		1.2 添加 clone 路径到 $ROS_PACKAGE_PATH
+			ROS_PACKAGE_PATH=/home/durant35/Workspace/ROS/hector_slam/hector_slam_example:$ROS_PACKAGE_PATH
+		1.3 安装
+			rosdep install hector_slam_example
+2. 运行
+		2.1 确保 $ROS_PACKAGE_PATH 找到 hector_slam_example
+			ROS_PACKAGE_PATH=/home/durant35/Workspace/ROS/hector_slam/hector_slam_example:$ROS_PACKAGE_PATH
+		2.2 修改 clone 路径下的 launch 文件，这里修改 hector_hokuyo.launch，换成我们自定义的驱动 urg_node
+			 	<!-- Modified by Durant35, use another driver urg_node instead of hokuyo_node 
+				<node pkg="hokuyo_node" type="hokuyo_node" name="hokuyo_node"/>
+				-->
+				
+				<node pkg="urg_node" type="urg_node" name="urg_node">
+					<!-- Set the port to connect to here ethernet -->
+					<param name="ip_address" type="string" value="192.168.0.10"/>
+				</node>
+			注：param节点用于传参数，可有可无，因为默认就是	192.168.0.10
+					具体参数及参数类型，请查看驱动wiki说明
+				
+		2.3 启动，运行，进入实验建图
+			roslaunch hector_slam_example hector_hokuyo.launch
+
+
+备注信息：
+	ROS探索总结（十三）——导航与定位框架
+		http://www.guyuehome.com/267
+	ROS探索总结（十四）——move_base（路径规划）
+		http://www.guyuehome.com/270
+	ROS探索总结（十五）——amcl（导航与定位）
+		http://www.guyuehome.com/273
+	Setup and Configuration of the Navigation Stack on a Robot
+		http://wiki.ros.org/navigation/Tutorials/RobotSetup
+			Publishing LaserScans over ROS(含具体ROS代码)
+				http://wiki.ros.org/navigation/Tutorials/RobotSetup/Sensors
+
+	ROS实战(1)之架构设计
+		http://3.1415926.science/ros/2016/01/02/ROS%E5%AE%9E%E6%88%98(1)%E4%B9%8B%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/
+
+		gmapping库需要两个输入，其一为激光雷达数据/scan，其二为全局的tf转换关系；且gmapping需求的tf中需要一个里程计数据以构建坐标系
+	

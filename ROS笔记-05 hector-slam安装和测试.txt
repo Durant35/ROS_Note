@@ -1,0 +1,24 @@
+How to build a Map Using Logged Data(Team_Hector_MappingBox_RoboCup_2011_Rescue_Arena.bag)
+	参考网址：http://wiki.ros.org/hector_slam/Tutorials/MappingUsingLoggedData
+	
+	1. 安装
+		sudo apt-get install ros-indigo-hector-slam
+		[sudo apt-get purge ros-indigo-hector-*]
+		
+		源码：https://github.com/tu-darmstadt-ros-pkg/hector_slam 
+		
+		
+	2. 获取数据集(这里需要翻墙 https://code.google.com/archive/p/tu-darmstadt-ros-pkg/downloads)
+			[或者从我的github备份版 下载 https://github.com/Durant35/tu-darmstadt-ros-pkg-dataset_backup.git]
+		wget http://tu-darmstadt-ros-pkg.googlecode.com/files/Team_Hector_MappingBox_RoboCup_2011_Rescue_Arena.bag
+		
+		
+	3. 测试：
+		terminal-1 按照tutorial.launch 节点配置来运行，包含启动master节点
+				roslaunch hector_slam_launch tutorial.launch
+		terminal-2
+				rosbag play Team_Hector_MappingBox_RoboCup_2011_Rescue_Arena.bag  --clock
+		
+备注信息：		
+	hector_mapping
+		provides 2D pose estimates at scan rate of the sensors (40Hz for the UTM-30LX)

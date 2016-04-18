@@ -1,0 +1,7 @@
+[了解]
+参考网址：http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment
+
+3. Managing Your Environment
+	$ printenv | grep ROS
+
+4. Create a ROS Workspace -- catkin/rosbuild

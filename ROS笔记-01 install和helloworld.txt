@@ -1,0 +1,17 @@
+1. Ubuntu install of ROS Indigo<-- LTS (Long Term Service)
+	http://wiki.ros.org/indigo/Installation/Ubuntu
+
+2. HelloWorld 
+	http://3.1415926.science/ros/2015/06/15/ROS%E6%91%B8%E7%B4%A2(3)%E4%B9%8BHelloWorld/
+		a. 两种创建ROS程序包的方式介绍
+			catkin包是ROS的一个官方的编译构建系统，是原本的ROS的编译构建系统rosbuild的后继者
+			rosbuild包(不使用)
+		b. 过程(学习如何开发catkin工程)
+			b.1 参照上文完成工程源码编写，熟悉工程结果，了解大致原理
+				cmake CMakeLists.txt
+				make
+			b.2 运行 ROS 节点前需要开启 ros_master
+				roscore
+			b.3 运行上述创建的两个节点
+				./listener 
+				./talker
