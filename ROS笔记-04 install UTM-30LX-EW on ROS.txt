@@ -41,6 +41,16 @@
 			!!!!!!!!!
 				urg_node/src/urg_node.cpp
 			!!!!!!!!!
+				line 210: 改成发布 scan  
+					bool publish_intensity;
+					//pnh.param<bool>("publish_intensity", publish_intensity, true);
+					// !!!! modified by Durant35
+					pnh.param<bool>("publish_intensity", publish_intensity, false);
+
+					bool publish_multiecho;
+					//pnh.param<bool>("publish_multiecho", publish_multiecho, true);
+					// !!!! modified by Durant35
+					pnh.param<bool>("publish_multiecho", publish_multiecho, false);
 
 
 ！！！使用的第一种方法 hokuyo_node 不行呀
