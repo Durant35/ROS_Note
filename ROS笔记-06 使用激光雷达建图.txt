@@ -24,6 +24,17 @@
 				
 		2.3 启动，运行，进入实验建图
 			roslaunch hector_slam_example hector_hokuyo.launch
+		
+		2.4 如何解决没办法显示轨迹的问题
+			<!-- Modified by Durant35, for generating trajectory, follow 
+				https://github.com/tu-darmstadt-ros-pkg/hector_slam/blob/catkin/hector_slam_launch/launch/tutorial.launch
+			
+			<include file="$(find hector_geotiff)/launch/geotiff_mapper.launch"/>
+			-->
+			<include file="$(find hector_geotiff)/launch/geotiff_mapper.launch">
+				<arg name="trajectory_source_frame_name" value="scanmatcher_frame"/>
+				<arg name="map_file_path" value="$(arg geotiff_map_file_path)"/>
+			</include>
 
 
 备注信息：
