@@ -17,7 +17,11 @@ How to build a Map Using Logged Data(Team_Hector_MappingBox_RoboCup_2011_Rescue_
 		terminal-1 按照tutorial.launch 节点配置来运行，包含启动master节点
 				roslaunch hector_slam_launch tutorial.launch
 		terminal-2
+				rosbag play Team_Hector_MappingBox_Dagstuhl_Neubau.bag  --clock
+				rosbag play Team_Hector_MappingBox_L101_Building.bag  --clock
 				rosbag play Team_Hector_MappingBox_RoboCup_2011_Rescue_Arena.bag  --clock
+				rosbag paly Team_Hector_MappingBox_RoboCupGermanOpen2011_Arena.bag  --clock
+				
 		
 备注信息：		
 	hector_mapping
