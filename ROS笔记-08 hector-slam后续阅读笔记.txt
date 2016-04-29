@@ -1,0 +1,6 @@
+ROS 学习系列 -- RViz 实时观测机器人建立导航2D封闭空间地图过程 (SLAM)
+	http://m.blog.csdn.net/article/details?id=44993391
+
+	ROS 对机器人导航提供了非常强大的支持，这可以让我们在不了解细节和海量复杂无比的科学计算的情况下就可以对机器人的导航，定位，路径规划。这其中第一步就是要建立一个封闭环境的地图，这个过程叫做SLAM (simultaneous localization and mapping),也称为CML (Concurrent Mapping and Localization), 即时定位与地图构建，或并发建图与定位
+
+	
