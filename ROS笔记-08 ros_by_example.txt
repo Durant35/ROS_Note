@@ -1,0 +1,23 @@
+1. 新建工程项目 ros_by_example
+2. 在 ros_by_example/src/ 下, 
+	git clone https://github.com/pirobot/rbx1.git
+	cd rbx1
+	git checkout indigo-devel
+	cd ..
+	catkin_make
+	source devel/setup.bash
+	rospack profile
+	
+3. amcl（导航与定位）
+	测试：
+		source devel/setup.sh
+		roslaunch rbx1_bringup fake_turtlebot.launch
+		
+		# 然后运行amcl节点，使用测试地图
+		# 这个lanuch文件作用是加载地图，并且调用fake_move_base.launch文件打开move_base节点并加载配置文件，最后运行amcl
+		source devel/setup.sh
+		roslaunch rbx1_nav fake_amcl.launch map:=test_map.yaml 
+		
+		# 在rviz中就显示出地图和机器人
+		rosrun rviz rviz -d `rospack find rbx1_nav`/amcl.rviz
+		

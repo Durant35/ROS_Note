@@ -1,0 +1,14 @@
+
+Robot
+	hostname
+	
+	export ROS_HOSTNAME=raspberrypi.local
+	roscore &
+
+Desktop
+	hostname
+	
+	export ROS_HOSTNAME=tarantula7-B480.local
+	export ROS_MASTER_URI=http://raspberrypi.local:11311
+	
+	rosrun rviz rviz -d `rospack find urg_node`/urg_node.rviz

@@ -3,6 +3,42 @@
 
 2. HelloWorld 
 	http://3.1415926.science/ros/2015/06/15/ROS%E6%91%B8%E7%B4%A2(3)%E4%B9%8BHelloWorld/
+	
+		workspace_folder/        -- WORKSPACE, provided by yourself
+			build/       					 -- provided by catkin, $ catkin_make
+			devel/       					 -- provided by catkin, $ catkin_make
+			src/                   -- SOURCE SPACE, provided by yourself
+				CMakeLists.txt       -- 'Toplevel' CMake file, provided by catkin, $ catkin_init_workspace
+				package_1/
+				  CMakeLists.txt     -- CMakeLists.txt file for package_1
+				  package.xml        -- Package manifest for package_1
+				...
+				package_n/
+				  CMakeLists.txt     -- CMakeLists.txt file for package_n
+				  package.xml        -- Package manifest for package_n
+				  
+				  
+		
+			1). 初始化项目目录 创建工作空间目录workspace/src后进入并执行命令以初始化此项目目录
+				catkin_init_workspace
+			2). 编译工作空间 先切换到workspace目录
+				catkin_make
+			3). 配置工作空间环境
+				source devel/setup.bash
+					环境变量设置检查
+				echo $ROS_PACKAGE_PATH
+					若返回类似这样 /root/dev/workspace/src:/opt/ros/indigo/share:/opt/ros/indigo/stacks, 则环境变量配置成功
+			4). 创建包
+				cd src
+				catkin_create_pkg pachage_1 std_msgs rospy roscpp
+				
+				Created file pachage_1/CMakeLists.txt
+				Created file pachage_1/package.xml
+				Created folder pachage_1/include/pachage_1
+				Created folder pachage_1/src										        -- your source file
+
+
+
 		a. 两种创建ROS程序包的方式介绍
 			catkin包是ROS的一个官方的编译构建系统，是原本的ROS的编译构建系统rosbuild的后继者
 			rosbuild包(不使用)

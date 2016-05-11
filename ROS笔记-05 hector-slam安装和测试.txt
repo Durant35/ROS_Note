@@ -1,9 +1,9 @@
 How to build a Map Using Logged Data(Team_Hector_MappingBox_RoboCup_2011_Rescue_Arena.bag)
 	参考网址：http://wiki.ros.org/hector_slam/Tutorials/MappingUsingLoggedData
 	
-	1. 安装
+	1. 安装 /opt/ros/indigo
 		sudo apt-get install ros-indigo-hector-slam
-		[sudo apt-get purge ros-indigo-hector-*]
+		[sudo apt-get purge ros-indigo-hector-* 卸载]
 		
 		源码：https://github.com/tu-darmstadt-ros-pkg/hector_slam 
 		

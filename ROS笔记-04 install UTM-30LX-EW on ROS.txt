@@ -18,6 +18,8 @@
 				rosrun urg_node urg_node _ip_address:="192.168.0.10"
 		c. 运行仿真，添加Laser Scan
 			rosrun rviz rviz
+			[rosrun rviz rviz -d `rospack find urg_node`/urg_node.rviz]
+			
 	2.3 直接源代码安装(后面可能需要修改源码)
 		2.3.1 需要调整 CMakeList.txt
 			## Modify by Durant35 to put it here, before!!!!!!!!!!!!!! ## LIBRARIES:
