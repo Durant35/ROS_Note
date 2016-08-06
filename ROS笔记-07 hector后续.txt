@@ -21,3 +21,6 @@ hector_navigation
 
 hector_localization
 	http://wiki.ros.org/hector_localization
+	
+	首先需要安装依赖
+	sudo apt-get install ros-indigo-geographic-msgs

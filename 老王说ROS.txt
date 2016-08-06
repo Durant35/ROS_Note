@@ -1,0 +1,118 @@
+《老王说ROS（1-5）》
+	http://blog.exbot.net/archives/1412
+
+	1.   ROS结构
+		ros提供了订阅发布的通信机制，也就是有个发布者发布一个topic，订阅者订阅这个topic，当有发布者就某个topic 发布message的时候，订阅这个topic的订阅者就可以收到这个message 了。当订阅者收到这个消息的时候，通过一个自定义的回调函数来处理消息，来完成自己的业务。
+
+	2.   ROS消息
+
+
+	3.   ROS Node
+		当你建立一个node后，要么它按照一个固定的周期运行，要么它阻塞等待事件发生，由事件驱动运行。无论是那种，node都要干活，node干的什么活呢？callback queue里的活。
+			这个callback queue里的callback是哪里来的呢？
+				常见的是subscriber的callback，当然还有其他的，包括publisher的，service的。
+
+		那这些callback是什么时候被调用的呢。那就是spin（）或者spinonce（）。
+			spin调用在queue 里所有的availiable的callback，如果没有availible的，它就阻塞。
+			spinonce，显然只调用一次，看看有没有准备好的callback，有就调用，没有就返回。
+
+		那什么是availible的、准备好的呢？
+			对于subscribe，准备好的就是那些有新消息的subscriber的callback。
+
+		1）第一个问题就是，如果subscriber没有收到新消息，那么它的callback就不会被执行。如果你想每次都运行callback呢？对不起，没办法
+
+		2）第二个问题，callback执行有个timeout值，
+			如果设置不合理，要么费时，要么callback被中止。万一是一个重要逻辑的一环呢？
+
+		如果你想实现事件触发的node就用spin；
+		如果你要固定周期的node，那就用spinonce+sleep，但一定要牢记，在每个周期里不是所有callback被执行。
+
+
+	4.   ROS Master
+
+		在很久很久以前，计算机里的程序是顺序执行的，在很久很久以后计算机里的程序还是顺序执行的。
+
+		不同的是以前计算机解决的问题比较简单，现在有点复杂。人类已经很难用结构化的思维来描述系统，很难用面向过程的语言把系统描述给计算机了。
+
+		于是，面向对象思维登场，把世界抽象为对象以及对象间的交互。这个说法没错，但牛叉的说一切皆对象并奉若神明否定过程，这是不对的。因为，对象从生到死是个过程，对象间交互也是个过程，没有面向过程的思维也是不行的。
+
+		但面向过程思维不能太结构化，特别是解决复杂系统问题的时候，要面向多进程并发，把世界抽象为过程以及过程间的交互。
+
+
+		master提供两种基础服务，naming service和parameter server。这两个服务本质上没有什么不同，就是注册和查询，只不过一个是地址，一个是参数。
+
+		1）master死了会怎样？
+		2）node死了会怎样？
+		3）怎么知道master死了？怎么知道node死了？
+
+		先说第一个master死了，可以重启嘛，只是重启之后，以前的node注册信息会丢失，你无法和以前的node建立交互关系。
+			node只在实例化nodehandler的时候注册信息。
+		第二个，node非正常死亡后，master是不知道的，rosnode list的时候，你还会看到它。
+		第三个问题，答案很简单。自己想办法！
+
+
+	5.   ROS node里的线程
+
+		在一个node里除了主线程外，至少有两个线程，
+			一个好像是pollmanager里有个类似于select（）的线程，负责poll各个socket的读写事件；
+			另外一个，我忘了在哪了，功能是监听、建立新的pub/sub链接。
+
+
+《老王说ROS（6）如何设计node》
+	http://blog.exbot.net/archives/1626
+
+	node是一个提供了
+		外部接口、
+		内部有结构、
+		用于实现业务
+	的进程。
+
+	node提供的接口有三种：
+		message-based的p/s interface，rpc-based的service interface，data-based的parameter interface。
+
+	node的内部结构可以分两种：
+		按时间周期工作，由事件驱动工作。
+
+	从抽象的角度来说，node要干的活可以分为：
+		data的生产者、消费者、加工者；
+		event的发起者、响应者；
+		service的提供者、需求者；
+		configuration的接受者、设定者；
+		其他基础服务者，如计算节点管理、数据记录、数据显示、系统异常检测与处理等等。
+
+	举slam node这个例子：
+		a.它是一个数据加工者。
+
+		b.它需要两个对外的输入接口：
+			环境感知传感器数据、定位定向数据；
+		  两个输出接口：
+		  	地图和位姿。
+		  那就用p/b吧。
+
+		c.它的内部结构按固定周期来吧。当然也有多种选择。
+			c1. 按最慢的那个输入的周期来，把算法放到感知传感器的回调函数里，靠数据生产者的周期控制自己的周期。
+			c2. 自己固定个周期，写个处理函数，在loop里调用，订阅数据的回调函数只管赋值。
+
+		它的算法参数应该可以设置，比如里程计和激光扫描仪的概率模型，因为每个传感器都有区别。
+
+		d.它需要作为一个configuration的接受者。用parameter service吧。
+
+		有个家伙需要控制你启动和停止运行，并且需要你报告执行的结果
+		
+		e. 它需要作为一个服务的提供者。
+			用service吧，当然还要去设计个状态机来控制不同的流程，并且还需要找个地方来实施。
+
+	玩slam的小伙伴：
+		（1）不标定里程计、不给它建个概率模型，就玩slam，等于在对激光扫描仪这个好姑娘耍流氓！
+		（2）不把里程计和扫描仪的时间同步考虑进去，就预测更新，那就是以组织的名义拉郎配！
+
+
+
+《老王说ROS（7）用ros做系统设计》
+	http://blog.exbot.net/archives/1675
+
+
+《老王说ros（8）ros的tf库》
+	http://blog.exbot.net/archives/1686
+
+	

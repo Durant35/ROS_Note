@@ -1,0 +1,109 @@
+《拿ROS navigation 玩自主导航攻略（1）——by 西工大一小学生》
+	http://blog.exbot.net/archives/1129
+
+	一般来说，导航规划层（不管是用什么自主移动的package），直接输出都是一个topic “cmd_vel”,
+		 里面的数据类型为 geometry_msgs/Twist 这个数据类型表示的是3d空间中的速度，2d的移动机器人只会用到三个值 linear.x linear.y 与 angular.z 分别表示水平分速度，垂直分速度，与角速度。
+
+	关于速度的平滑： 
+		对于规划层而言，即使有加速度等一些参数的限制，它输出的速度值可能还是对于下位机过于不友好（比如过大的加速减速，不定的发送频率等等），那么就在速度接口这边就要执行一个平滑的过程
+
+	里程计接口：
+		一般导航都会要求一个里程计数据的输入，这个可以解释为“通过编码器的转动推测轮子在时间片中的位移，进一步算出机器人整体的位移与速度”
+
+		这个部分需要注意的地方主要就是发布频率了。这个频率涉及到之后的costmap更新与坐标系的访问超时问题
+
+	传感器接口：
+		一般rgbd-camera与激光雷达都有相应的sensor driver 提供，roslaunch相应文件就可以了。
+		传感器一般在消息的 header中都需要相应的传感器采集坐标系，对于固定的传感器使用 tf 中的 static_transform_publisher 给定传感器与机器人中心相对位姿就可以了。
+
+	ROS 中的重要相关部分部分：
+		tf ： 坐标转换库，提供实时的坐标转换查询与更改服务。 
+			它将坐标转换表示为树形结构，而坐标转换数据的更新速度直接影响 其他节点的实时性，进而导致整个系统的运行出错，出问题大部分也是在这部分。
+
+		actionlib：
+			提供动作（action ROS 中表示一些长时间，连续性的行为） 的编程接口，
+			提供动作执行时的查看状态，终止，抢占等一系列功能。
+			ROS中的自主移动规划层向上的编程接口一般都是通过这个库。
+
+		pluginlib ： 
+			提供可配置的组件（配置文件就可以规定组件的添加与更换，提供了运行时改变组件的可能性）navigaion 中提供了对于多种planner的支持。
+
+		dynamic_reconfigure : 
+			提供运行时改变算法（节点）参数的功能。
+
+
+	SLAM：
+		提到SLAM，在社区中应用最多的应该是 Gmapping 与 hector_slam这两种2d slam方法了
+
+
+	机器人的导航规划部分
+		我了解最深的是ROS navigation metapackage ，
+			 一般它输入为激光雷达（使用rgbd-camera 效果不佳）与里程计数据，
+			 输出为cmd_vel 机器人在2d平面上的速度。
+		与之类似的是hector_navigation。这一部分主要解决安全路径的规划问题。
+
+		ROS 中对于多坐标系的处理是使用树型表示，在机器人自主导航中，ROS会构建这几个很重要的坐标系：
+			base_link: 
+				一般位于tf tree 的最根部，物理语义原点一般为表示机器人中心，为相对机器人的本体的坐标系。
+
+			odom：
+				一般直接与base_link 相链接，语义为一个对于机器人全局位姿的粗略估计。取名来源于odometry（里程计），一般这个坐标系的数据也是来源于里程计。
+				对于全局位姿的估计方法很多，
+					比如在hector SLAM与导航体系中，就采用了imu数据估计全局位姿，
+					还有很多视觉里程计的算法（visual odometry）也能提供位姿估计。
+				原点为开始计算位姿那个时刻的机器人的位置。
+
+			odom_combined 
+				这个tf一般为好几种位姿估计方法的信息融合后的数据。在navigation metapackage中有 robot_pose_ekf 这个包是用扩展卡尔曼滤波算法（EKF）融合不同传感器的数据。
+
+			map: 
+				一般与odom（或者odom_combined）相连，语义为一个经过先验（或者SLAM）地图数据矫正过的，在地图中的位姿信息。
+				与odom同为全局坐标系。
+				原点为地图原点（地图原点在地图相应的yaml文件中有规定）。
+
+	在机器人定位与导航体系中，定位模块作为规划层的输入与参考数据所存在。
+		而对于ROS navigation 体系而言，因为它先天的模块间通讯方式实现了模块间的完全解耦，所以对于导航规划层而言（具体就是move_base 这个node），什么定位方法，静态还是动态的地图，对于导航层内部几乎没有区别。
+
+		在这种思想指导下，navigation metapackage 中 就有了为仿真器环境下的定位工具包fake_localization： 用于把仿真器中的位姿（就是直接吧odom 变换成map）估计直接变换成关于全局地图的定位，简化定位部分；
+
+		对于动态创建的地图slam， gmapping 在ROS中提供从 odom -》map的坐标转换，也可以作为navigation 中 move_base 的输入
+
+		从定位这部分扩展开来， 对于导航规划层来说，仿真器还是实物传回来的数据这些都无所谓。只要有相应的数据就可以执行相应功能。所以我们配置navigation的时候思路就是先把数据流接对，然后再根据自己机器人硬件与执行任务的不同修改相应的参数。
+
+	
+
+
+
+《拿ROS玩移动机器人自主导航攻略(二) --by 西工大一小学生》
+	http://blog.exbot.net/archives/2308
+
+	Local Planner
+	 	Local planner 需要订阅里程计信息获得当前机器人移动速度, 所以保证里程计odom topic中twist部分的正确性也是非常重要的.
+
+	 	local planner 部分是navigation中参数最多, 最能直接影响机器人行为的部分. 调节local planner 中的 acceleration & velocity limit 可以直接控制机器人速度/加速度上限. 而设置holonomic_robot 与 y_vels 参数, 是否采样y 方向速度, 全向移动机器人可以通过调整这些参数实现平移避障等动作.
+
+	 	对于local planner, local costmap global frame 的选取一般是odom, odom坐标系在局部准确性满足要求而且实时性比map 更好(少经过一层处理). 一般要把rolling window选上, 因为局部避障要考虑先验地图中没有的障碍物.
+
+	 Global Planner
+	 	全局路径规划navigation中实现的方法是基于栅格地图的cost 搜索找最优, 而我们所喜闻乐见的A*与dijkstra 只是扩展栅格路径的不同方式而已, dijstra 一般消耗时间和空间都较A*要多,但是A*找到的一般不是全局最优解
+
+	 	navigation中的这两层规划(Global vs Local)之间联系纽带就是local_planner中的cost function 有将全局路径考虑在内, 也就是说 local_planner 输出的local path会有靠近global path 的趋势, 而具体情况得看当时的速度以及障碍物情况(cost function 去最大值而global path 只是一个因素)
+
+	 	对于global costmap, global frame的选取一般要看机器人需求, 
+	 		如果是在已知地图中, 使用static map预生成costmap是又快又好的方法, 使用map坐标系做全局坐标系,
+	 		但是如果要执行一些探索任务, 没有先验地图, 定位数据选取就看你手上有什么类型的数据了, rolling_window也是看需求选取
+
+	 Move base
+	 	这个模块负责整个navigation 行为的调度, 
+	 		包括初始化costmap与planner, 监视导航状态适时更换导航策略等. 涉及到行为的控制, 
+
+	 	move_base 具体实现就是有限状态机, 定义了若干recovery_behavior , 指定机器人导航过程中出问题后的行为. 出问题有这几种情况:
+			<1 控制失败, 找不到合法的速度控制量输出, 一般就是local_planner 出问题了.
+			<2 规划失败, 找不到合法的路径, 一般就是global planner 出问题了.
+			<3 局部规划震荡, 局部规划器在某些特定情况下, cost function 出现局部最小, 具体表现为以一个较小的速度来回移动,这个时候机器人光靠local planner无法给出合适的速度控制量.
+
+		前两种情况, 一般就是planner 在当前的cost map中无法找到合法路径, 所以recovery_behavior一般是清除costmap 中的occupied grid,重新通过传感器数据生成costmap, 这样可以消除一些costmap 建图不准产生的杂点所导致的失败.
+
+		后一种情况, move_base 会给底盘发送一小段时间的很小的速度.通过主动移动给一个扰动逃离local planner cost function的局部最小.
+
+		在前两轮的recovery 失败后,move_base默认会采用一种更加激进的方式,原地旋转来企图清除costmap中的障碍物.所以很多navigation 失败情况之前都会原地转上好几圈, 这个行为完全可以通过move_base的参数进行更改,recovery_behavior也是通过pluginlib构建,自己定制也是完全可行.

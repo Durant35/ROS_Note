@@ -1,0 +1,37 @@
+《move_base and hector_slam》
+	http://answers.ros.org/question/166566/move_base-and-hector_slam/
+
+	how to do? overview
+
+	 i solved my problem by publishing a fake optometry data using hector_slam position. 
+	 only the speed of robot is computed from robot encoders. 
+	 now my robot can navigate and follow the trajectory path to rich the goal. 
+
+	 i don't use static map ( map server and amcl ) so for both local and global parameters , i set the static parameter false and windowing is true 
+
+
+《hectorslam + navigation stack : obstacle inflation problem》
+	http://answers.ros.org/question/40251/hectorslam-navigation-stack-obstacle-inflation-problem/
+
+	The navigation stack creates a set of costmaps directly from the lasers scan data and not the map created with hector or gmapping.
+
+	The laserscan data may indicate a wall and this is loaded into the costmap to create the inflated obstacles. 
+
+	If the map from hector has not been updated yet then the inflated obstacle costmap may lie partly in unknown space. This creates problems when using hector or gmapping with the navigation and exploration packages due to the differences between the costmaps and the map. 
+
+
+《Using odometry from hector_mapping for move_base (Nav stack)》
+	http://answers.ros.org/question/62081/using-odometry-from-hector_mapping-for-move_base-nav-stack/
+
+	move_base doesn't need the odom topic, it can get odometry information from the tf that is being published by hector_mapping!
+
+	use hector_mapping for odometry on my robot, and have set the pub_map_odom_transform option of my hector_mapping node to true to publish a tf between the map & the odom frames
+
+《Autonomous navigation using navigation stack and hector slam》
+	http://answers.ros.org/question/73261/autonomous-navigation-using-navigation-stack-and-hector-slam/
+
+	1. Is it possible to do this without using the robot's odometry and just using the odometry information from the tf that is being published by hector_mapping?
+
+	2. Does AMCL works only with static maps i.e. can AMCL perform localization on the maps being generated in real time ?
+
+	3. Moreover do I need AMCL to perform localization in a dynamic map being generated using hector slam ? If, not then how exactly should I make this work without amcl.

@@ -1,0 +1,83 @@
+amcl with NetWorking ROS
+
+	The	location of the robot, also known as its pose, is represented by a position	and orientation	in	the	map	coordinate frame (sometimes	also called	the	world coordinate frame)
+
+	amcl maintains a set of	these poses, representing where	it	thinks the robot might be.	
+		Each of	these candidate	poses has associated with it a probability;	higher-probability poses	are	more likely	to be where	the	robot actually is.	
+		As the robot moves around the world, the sensor	readings are compared to the readings that would be	expected for each of the poses,	according to the map.	
+
+	For	each candidate pose,	
+		if the readings	are	consistent with	the	map, then the probability of that pose increases.	
+		If the readings	are	inconsistent, then the probability decreases.	
+
+	Over time, candidate poses with	very low probability	
+		(i.e., where the robot is most likely not really in	that pose) go away, while those	with high probability stick	around
+
+	1. PC端时间同步
+		$ sudo ntpdate durant35.local
+
+	2. Robot 启动
+		$ source devel/setup.sh
+		$ export ROS_HOSTNAME=durant35.local
+		$ roscore &
+		$ ./laserScannerConfig.sh
+		// hector_slam
+		//$ roslaunch hector_slam_launch hector_slam.launch
+		
+		$ roslaunch amcl_launch amcl.launch
+
+http://ros-users.122217.n3.nabble.com/amcl-for-localization-td1168887.html			
+	Is the robot moving?  
+		The /amcl_pose data is published only on filter updates, which occur each time the robot has moved a sufficient distance.  
+		The /tf data is published continuously; 
+		this is where most programs look for the pose estimates produced by amcl.  To see it, try tf_echo: 
+			rosrun tf tf_echo map odom
+			rostopic echo /amcl_pose
+		
+	3. PC 启动
+	source devel/setup.sh
+	export ROS_HOSTNAME=tarantula7-B480.local
+	export ROS_MASTER_URI=http://durant35.local:11311
+	
+	//roslaunch amcl_launch amcl.launch map:=lab314_2.yaml
+	
+	roslaunch amcl_launch amcl.launch map:=lab510_0518.yaml
+	
+	
+	roslaunch amcl_launch amcl_networking.launch map:=lab510_0728.yaml
+	amcl_networking
+	设置 initial pose 并初始化 amcl 定位
+	./CarControlServer
+	roslaunch motor_driver_launch keyboard.launch
+
+
+
+some problems 如何解决没有里程计下amcl运作的问题:
+
+1. 《amcl does not need odometry data?》
+	http://answers.ros.org/question/98221/amcl-does-not-need-odometry-data/
+
+	amcl receives its odometry informations through the /odom -> /base_link transform. (Or whatever you have set as odom_frame_id and base_frame_id parameters)
+
+	This means that you need a node (typically your hardware abstraction) that accumulates odom information from your base-robot and publish the aggregated pose as a transform.
+
+	So no, laser only will not be sufficient.
+
+2.《iRobot Create + Hokuyo LIDAR + YAML map + AMCL》
+	http://answers.ros.org/question/61891/irobot-create-hokuyo-lidar-yaml-map-amcl/
+
+	I guess you might need laser_scan_matcher to provide 'fake' odometry for amcl to work.
+
+
+3.《how to: Building PCL & laser_scan_matcher on Raspberry pi 2》
+	http://answers.ros.org/question/229788/how-to-building-pcl-laser_scan_matcher-on-raspberry-pi-2/
+
+
+4.《AMCL + Laser Scan Matcher Crashing》
+	http://answers.ros.org/question/98736/amcl-laser-scan-matcher-crashing/
+	
+	1. Remove the static transforms from map -> odom and odom -> base_link. You want them dynamic from amcl and the laser_scan_matcher and not static.
+
+	2. fixed_frame for the laser_scan_matcher has to be set to /odom and not map, since the node is responsible for your odom -> base_link transform and not the localization within your map
+		
+		

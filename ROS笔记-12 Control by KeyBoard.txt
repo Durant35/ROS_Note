@@ -1,0 +1,13 @@
+pi@raspberrypi:~ $ cd ros_my_ws/
+pi@raspberrypi:~/ros_my_ws $ su
+root@raspberrypi:/home/pi/ros_my_ws# source devel/setup.sh
+root@raspberrypi:/home/pi/ros_my_ws# export ROS_HOSTNAME=durant35.local
+root@raspberrypi:/home/pi/ros_my_ws# roscore &
+root@raspberrypi:/home/pi/ros_my_ws# rosrun raspberry_pi_pwm motor_control
+
+
+
+durant35@tarantula7-B480:~/Workspace/ROS/ros_by_example$ source devel/setup.sh
+durant35@tarantula7-B480:~/Workspace/ROS/ros_by_example$ export ROS_HOSTNAME=tarantula7-B480.local
+durant35@tarantula7-B480:~/Workspace/ROS/ros_by_example$ export ROS_MASTER_URI=http://durant35.local:11311
+durant35@tarantula7-B480:~/Workspace/ROS/ros_by_example$ roslaunch rbx1_nav keyboard_teleop.launch

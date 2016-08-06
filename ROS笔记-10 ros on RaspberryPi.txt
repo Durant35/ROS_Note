@@ -1,0 +1,157 @@
+how to install? follow here: 
+	http://wiki.ros.org/ROSberryPi/Installing%20ROS%20Indigo%20on%20Raspberry%20Pi
+
+1. 采用 Raspbian Jessie(通过命令 hostnamectl 查看)
+
+2. 	sudo apt-get update
+	sudo apt-get upgrade 依赖网速
+
+3. 使用wstool 安装ROS-Comm (包括ROS package, build, and communication libraries. No GUI tools)
+	$ rosinstall_generator ros_comm --rosdistro indigo --deps --wet-only --exclude roslisp --tar > indigo-ros_comm-wet.rosinstall
+	$ wstool init src indigo-ros_comm-wet.rosinstall
+
+	建议随手安装 robot 版本
+	$ rosinstall_generator robot --rosdistro indigo --deps --wet-only --tar > indigo-robot-wet.rosinstall
+	$ wstool init src indigo-robot-wet.rosinstall
+
+4. 解决 rosdep 依赖
+	$ cd ~/ros_catkin_ws
+	$ rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debian:jessie
+
+5. 接下来是耗人的构建 建议使用-j2两核，不然会卡死
+	sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo -j2
+
+6. 安装新package
+	$ cd ~/ros_catkin_ws
+	$ rosinstall_generator ros_comm urg_node --rosdistro indigo --deps --wet-only --exclude roslisp --tar > indigo-custom_ros.rosinstall
+
+	使用 wstool 更新
+	$ wstool merge -t src indigo-custom_ros.rosinstall
+	$ wstool update -t src
+
+	更新 rosdep 依赖
+	$ rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debian:jessie
+
+	构建，之前的似乎会跳过安装，不过还是会make的
+	$ sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo
+
+	可以使用参数(--install之前)
+		# "List of ';' separated packages to build"
+		$ catkin_make -DCATKIN_BLACKLIST_PACKAGES="foo;bar"
+	
+sudo ./src/catkin/bin/catkin_make_isolated --install -DCATKIN_BLACKLIST_PACKAGES="pcl_conversions;pcl_msgs;pcl_ros" -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo
+	
+	
+		$ sudo ./src/catkin/bin/catkin_make_isolated --install -DCATKIN_BLACKLIST_PACKAGES="catkin;genmsg" -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo
+	或者
+		$ sudo ./src/catkin/bin/catkin_make_isolated --pkg urg_node <other package name> --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo
+
+
+!! 如何安装laser_scan_matcher
+	参考-1： http://answers.ros.org/question/197658/errors-at-catkin_make-for-laser_scan_matcher/
+			
+	pcl_conversions
+	pcl_msgs
+	perception_pcl/pcl_ros
+	
+	$ cd ~/ros_catkin_ws
+	$ rosinstall_generator ros_comm pcl_ros --rosdistro indigo --deps --wet-only --exclude roslisp --tar > indigo-custom_ros.rosinstall
+	
+	$ wstool merge -t src indigo-custom_ros.rosinstall
+	$ wstool update -t src
+	
+	$ rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debian:jessie
+	
+	！！只能使用=j1参数，否则会出现编译内存错误！！
+	sudo ./src/catkin/bin/catkin_make_isolated --pkg pcl_conversions pcl_msgs pcl_ros --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo -j1
+
+
+	参考-2： http://answers.ros.org/question/229788/how-to-building-pcl-laser_scan_matcher-on-raspberry-pi-2/
+	$ git clone https://github.com/AndreaCensi/csm.git (I cloned this into a sub directory of scan_tools)
+	$ ./install_quickstart.sh
+	
+	$ export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/home/pi//csm/sm/pkg-config
+	
+	$ cp -r ~/ros_my_ws/src/scan_tools/csm/deploy/include/* /home/pi/ros_my_ws/src/scan_tools/laser_scan_matcher/include/
+	
+	// 	catkin_make [make_targets]
+	$ catkin_make laser_scan_matcher
+	
+
+~~  traversing 74 packages in topological order: 70 + urg_node + pcl_conversions pcl_msgs pcl_ros
+~~  - catkin
+~~  - genmsg
+~~  - gencpp
+~~  - genlisp
+~~  - genpy
+~~  - angles
+~~  - cmake_modules
+~~  - class_loader
+~~  - cpp_common
+~~  - message_generation
+~~  - message_runtime
+~~  - mk
+~~  - ros
+~~  - ros_comm
+~~  - rosbash
+~~  - rosboost_cfg
+~~  - rosbuild
+~~  - rosclean
+~~  - roscpp_traits
+~~  - roscreate
+~~  - rosgraph
+~~  - roslang
+~~  - rosmake
+~~  - rosmaster
+~~  - rosmsg
+~~  - rospack
+~~  - roslib
+~~  - rosparam
+~~  - rospy
+~~  - rosservice
+~~  - rostime
+~~  - roscpp_serialization
+~~  - roslaunch
+~~  - rosunit
+~~  - rosconsole
+~~  - pluginlib
+~~  - roslz4
+~~  - rosbag_storage
+~~  - rostest
+~~  - smclib
+~~  - std_msgs
+~~  - actionlib_msgs
+~~  - bond
+~~  - diagnostic_msgs
+~~  - geometry_msgs
+~~  - rosgraph_msgs
+~~  - sensor_msgs
+~~  - pcl_msgs
+~~  - std_srvs
+~~  - tf2_msgs
+~~  - tf2
+~~  - urg_c
+~~  - xmlrpcpp
+~~  - roscpp
+~~  - bondcpp
+~~  - nodelet
+~~  - laser_proc
+~~  - pcl_conversions
+~~  - rosout
+~~  - diagnostic_updater
+~~  - dynamic_reconfigure
+~~  - message_filters
+~~  - rosnode
+~~  - rostopic
+~~  - roswtf
+~~  - tf2_py
+~~  - topic_tools
+~~  - rosbag
+~~  - actionlib
+~~  - nodelet_topic_tools
+~~  - tf2_ros
+~~  - tf
+~~  - pcl_ros
+~~  - urg_node
+
+

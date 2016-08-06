@@ -1,0 +1,71 @@
+
+Robot:
+	sudo ntpdate tarantula7-B480.local
+	
+	source devel/setup.sh
+	export ROS_HOSTNAME=durant35.local
+	
+	roslaunch move_base_launch move_base.launch
+	
+	
+PC:
+	
+
+	source devel/setup.sh
+	export ROS_HOSTNAME=tarantula7-B480.local
+	export ROS_MASTER_URI=http://durant35.local:11311
+	roslaunch navigation_launch navigation_networking.launch map:=lab510_0526.yaml
+
+	//roslaunch navigation_launch navigation.launch map:=lab314_2.yaml
+	//roslaunch navigation_launch navigation.launch map:=lab510_0518.yaml
+	roslaunch navigation_launch navigation.launch map:=lab510_0531.yaml
+	
+	roslaunch navigation_launch navigation_trajectory.launch map:=lab510_0531.yaml
+	
+	roslaunch navigation_launch navigation_smoother.launch map:=lab510_0531.yaml
+	
+	
+	
+使用键盘操控
+	roslaunch motor_driver_launch keyboard.launch
+	
+开启导航功能
+	roslaunch navigation_launch navigation.launch map:=lab510_0518.yaml
+	roslaunch navigation_launch navigation.launch map:=lab510_0526.yaml
+	
+	设置 initial pose 并初始化 amcl 定位
+	./CarControlServer
+	roslaunch motor_driver_launch keyboard.launch
+	
+	roslaunch motor_driver_launch motor_driver.launch
+	
+	
+	Robot: 
+	fuser 13000/tcp -v
+	kill PID
+
+
+
+《Obtaining nav_msgs/Odometry from a laser_scan (eg. with laser_scan_matcher)》
+	http://answers.ros.org/question/12489/obtaining-nav_msgsodometry-from-a-laser_scan-eg-with-laser_scan_matcher/#18434
+
+	It looks like the scan matcher isn't measuring velocity directly, but it is computing the delta in the laser position, which you could combine with the time between laser scans to produce a rough estimate of velocity, subject to jitter in your laser frequency and any errors in the scan matching.
+
+
+《Does a static_map costmap continually update from map_server?》
+	http://answers.ros.org/question/107281/does-a-static_map-costmap-continually-update-from-map_server/
+
+	does this only happen once, when initializing the costmap, or will the costmap be periodically updated when the map in map_server changes?
+
+	Yes, it continually updates
+
+
+《What's the difference between global and local costmap's static_map?》
+	http://answers.ros.org/question/10620/whats-the-difference-between-global-and-local-costmaps-static_map/
+
+	The difference between the global and local costmap is that the global planner uses the global costmap to generate a long-term plan while the local planner uses the local costmap to generate a short-term plan. 
+
+	Setting the "static_map" parameter to true just means that you'll be taking an outside map source for navigation. That map could come from SLAM or it could come from a source like the map_server.
+
+	gmapping can just replace the map_server with global static_map=true. An example of setting static_map=false, rolling_window=true would be a situation where you want to run navigation for the robot in the odometric frame without any map at all.
+

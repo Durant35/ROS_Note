@@ -1,0 +1,51 @@
+		1. Robot端时间同步
+			$ sudo ntpdate tarantula7-B480.local
+
+		2. Robot 启动
+			$ source devel/setup.sh
+			$ export ROS_HOSTNAME=durant35.local
+			$ ./laserScannerConfig.sh
+			$ roslaunch hector_slam_launch hector_slam.launch &
+			cd ../git_ws/CarControlServer/build/
+			./CarControlServer
+			
+http://ros-users.122217.n3.nabble.com/amcl-for-localization-td1168887.html			
+	Is the robot moving?  
+		The /amcl_pose data is published only on filter updates, which occur each time the robot has moved a sufficient distance.  
+		The /tf data is published continuously; 
+		this is where most programs look for the pose estimates produced by amcl.  To see it, try tf_echo: 
+			rosrun tf tf_echo map odom
+			rostopic echo /amcl_pose
+			
+		Robot: 
+	fuser 13000/tcp -v
+	kill PID
+		
+		3. PC 启动
+		source devel/setup.sh
+		export ROS_HOSTNAME=tarantula7-B480.local
+		export ROS_MASTER_URI=http://durant35.local:11311
+		
+		roslaunch hector_slam_example hector_hokuyo_networking.launch
+		
+		source devel/setup.sh
+		export ROS_HOSTNAME=tarantula7-B480.local
+		export ROS_MASTER_URI=http://durant35.local:11311
+		rosbag record -o lab510_notf /scan
+		
+		source devel/setup.sh
+		export ROS_HOSTNAME=tarantula7-B480.local
+		export ROS_MASTER_URI=http://durant35.local:11311
+		rosbag record -o lab510_withtf /scan /tf
+		
+		durant35@tarantula7-B480:~/Workspace/ROS/motor_driver$ source devel/setup.sh
+		durant35@tarantula7-B480:~/Workspace/ROS/motor_driver$ roslaunch motor_driver_launch keyboard.launch 
+		
+		rosrun map_server map_saver -f lab510_0518
+		
+		
+		
+		
+		
+		
+		

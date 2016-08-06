@@ -12,3 +12,30 @@ Desktop
 	export ROS_MASTER_URI=http://raspberrypi.local:11311
 	
 	rosrun rviz rviz -d `rospack find urg_node`/urg_node.rviz
+	
+
+hector slam with NetWorking ROS
+	Raspberry pi
+		cd ~/ros_my_ws
+		source devel/setup.sh
+		export ROS_HOSTNAME=durant35.local
+		roscore &
+		roslaunch urg_node urg_node.launch 
+
+	Desktop
+		cd Workspace/ROS/hector_slam/
+		source devel/setup.sh
+		export ROS_HOSTNAME=tarantula7-B480.local
+		export ROS_MASTER_URI=http://durant35.local:11311
+		roslaunch hector_slam_example hector_hokuyo_networking.launch
+		
+		PC端时间同步
+		sudo ntpdate durant35.local
+		
+
+
+		
+		
+
+		
+	
