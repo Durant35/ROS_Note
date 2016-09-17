@@ -12,9 +12,9 @@ PC:
 	
 
 	source devel/setup.sh
-	export ROS_HOSTNAME=durant35-aspire-tc.local
+	export ROS_HOSTNAME=tarantula7-B480.local
 	export ROS_MASTER_URI=http://durant35.local:11311
-	roslaunch navigation_launch navigation_networking.launch map:=lab510_0817.yaml
+	roslaunch navigation_launch navigation_networking.launch map:=lab510_0526.yaml
 
 	//roslaunch navigation_launch navigation.launch map:=lab314_2.yaml
 	//roslaunch navigation_launch navigation.launch map:=lab510_0518.yaml

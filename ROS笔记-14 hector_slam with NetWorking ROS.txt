@@ -1,5 +1,12 @@
 		1. Robot端时间同步
 			$ sudo ntpdate tarantula7-B480.local
+			
+			# PC need to install ntpdate first
+			sudo apt install ntpdate
+			# Robot & PC time synchronization
+			sudo ntpdate -u time.windows.com
+			#sudo ntpdate -u durant35-Aspire-TC.local
+			#sudo date -s "2016-08-15 20:53:00"
 
 		2. Robot 启动
 			$ source devel/setup.sh
@@ -23,7 +30,8 @@ http://ros-users.122217.n3.nabble.com/amcl-for-localization-td1168887.html
 		
 		3. PC 启动
 		source devel/setup.sh
-		export ROS_HOSTNAME=tarantula7-B480.local
+		#export ROS_HOSTNAME=tarantula7-B480.local
+		export ROS_HOSTNAME=durant35-Aspire-TC.local
 		export ROS_MASTER_URI=http://durant35.local:11311
 		
 		roslaunch hector_slam_example hector_hokuyo_networking.launch

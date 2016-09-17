@@ -1,0 +1,51 @@
+1. install dependencies
+ sudo apt-get install libpcap*
+ 
+2. create ros workspace
+ mkdir ROS_ws
+ cd ROS_ws
+ mkdir src & cd src
+ catkin_init_workspace
+ cd ..
+ catkin_make
+ 
+3. git clone
+ cd src
+ git clone https://github.com/ros-drivers/velodyne.git
+ cd ..
+ catkin_make
+ 
+4. configure your ethernet(here is enp3s0)
+ sudo ifconfig enp3s0 192.168.1.110 netmask 255.255.255.0
+ ping 192.168.1.201
+	it should be ping successfully!!
+
+5. Getting Started with the Velodyne HDL-32E
+	http://wiki.ros.org/velodyne/Tutorials/Getting%20Started%20with%20the%20HDL-32E
+	
+  4.1 rosrun velodyne_pointcloud gen_calibration.py 32db.xml
+  
+  4.2 roslaunch velodyne_pointcloud 32e_points.launch calibration:=/home/durant35/Workspace/ROS_ws/32db.yaml
+  
+  4.3 rosrun rviz rviz -f velodyne
+  
+6. velodyne_height_map --> Obtacles Detection
+	http://wiki.ros.org/velodyne_height_map
+	
+ 6.1 roslaunch velodyne_height_map heightmap_launch.launch
+  	<launch>
+	  <!-- start nodelet manager and driver nodelets -->
+	  <!-- start transform nodelet using test calibration file -->
+	  <include file="$(find velodyne_pointcloud)/launch/32e_points.launch">
+		<arg name="calibration"
+		     value="/home/durant35/Workspace/ROS_ws/32db.yaml"/>
+	  </include>
+	  <!-- start heightmap nodelet -->
+	 <node pkg="velodyne_height_map" type="heightmap_node" name="heightmap_node">
+		<param name="full_clouds" type="bool" value="true"/>
+	 </node>
+	</launch>
+ 6.2 rosrun rviz rviz -f velodyne
+	
+	
+  

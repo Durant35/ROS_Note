@@ -70,9 +70,9 @@ sudo ./src/catkin/bin/catkin_make_isolated --install -DCATKIN_BLACKLIST_PACKAGES
 	$ git clone https://github.com/AndreaCensi/csm.git (I cloned this into a sub directory of scan_tools)
 	$ ./install_quickstart.sh
 	
-	$ export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/home/pi//csm/sm/pkg-config
+	$ export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/home/durant35/Workspace/ROS_ws/src/csm/sm/pkg-config
 	
-	$ cp -r ~/ros_my_ws/src/scan_tools/csm/deploy/include/* /home/pi/ros_my_ws/src/scan_tools/laser_scan_matcher/include/
+	$ cp -r /home/durant35/Workspace/ROS_ws/src/csm/deploy/include/* /home/durant35/Workspace/ROS_ws/src/laser_scan_matcher/include
 	
 	// 	catkin_make [make_targets]
 	$ catkin_make laser_scan_matcher

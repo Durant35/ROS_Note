@@ -36,7 +36,7 @@ http://ros-users.122217.n3.nabble.com/amcl-for-localization-td1168887.html
 		
 	3. PC 启动
 	source devel/setup.sh
-	export ROS_HOSTNAME=tarantula7-B480.local
+	export ROS_HOSTNAME=durant35-aspire-tc.local
 	export ROS_MASTER_URI=http://durant35.local:11311
 	
 	//roslaunch amcl_launch amcl.launch map:=lab314_2.yaml
@@ -44,7 +44,7 @@ http://ros-users.122217.n3.nabble.com/amcl-for-localization-td1168887.html
 	roslaunch amcl_launch amcl.launch map:=lab510_0518.yaml
 	
 	
-	roslaunch amcl_launch amcl_networking.launch map:=lab510_0728.yaml
+	roslaunch amcl_launch amcl_networking.launch map:=lab510_0817.yaml
 	amcl_networking
 	设置 initial pose 并初始化 amcl 定位
 	./CarControlServer
